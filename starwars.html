@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+       
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+      <script src="https://www.solodev.com/assets/pagination/jquery.twbsPagination.js"></script>
+<style>
+.container{
+        margin-top: 20px;
+    }
+.card, #pagination-demo, li.page-item{
+    width: 200px;
+    margin: 0px auto;
+    background: transparent;
+    border: none;
+}   
+h2, label{ 
+    text-shadow: -1px 0px #333;
+}
+.page {
+  display: none;
+}
+.page-active {
+  display: block;
+}
+
+</style>
+
+
+</head>
+
+
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <div class="container">
+                <h2 class="display-6 text-primary">Search for all Starwars Honks</h2>
+                <div id="myMessage"></div>
+                <hr> 
+            <form>         
+            <div class="form-group textsearch">
+                <label for="searchText">Search for actor</label>
+                <input type="text" class="form-control" id="searchText" placeholder="Enter actor name" required="required" />
+            </div>
+                <div id="showCard"></div>
+                <div class="showpagination">                    
+                    
+                        <div id="page-content" class="page-content">
+                                 <div id="showCards"></div>  
+                        </div>
+                        
+                    <ul id="pagination-demo" class="pagination-sm pull-right"></ul>
+                </div>
+                <hr>    
+            <button type="submit" id="searchButton" class="btn btn-primary btn-m mb-2">Search By Name</button>
+            <button type="submit" id="searchPag" class="btn btn-primary btn-m mb-2 float-sm-right">Search By Pagination</button>
+            </form>
+        </div>
+        </div>        
+    
+ </div>
+   
+
+    
+ 
+
+    <script>
+
+        class Cardlist{
+
+                constructor(url) {
+                    this.url = url;                     
+                    this.myMessage = '';                                      
+                }
+
+            
+                async fetchAsync() {
+                    // await response of fetch call
+                    let response = await fetch(this.url);
+                    // only proceed once promise is resolved
+                    let data = await response.json();
+                    // only proceed once second promise is resolved
+                    //console.log(data);
+                    this.showApiResults(data);
+                    this.showApiResult(data);
+                }
+
+                showApiResult(data){ 
+                                        
+                    let cardContent = ''; 
+                                
+                    $( "#searchButton" ).click(function(e) {  
+                        e.preventDefault();
+                                             
+                        $( ".showpagination" ).hide();
+                        $( ".textsearch" ).show();
+                        $('#pagination-demo').twbsPagination('destroy');                      
+                                           
+                                
+                        data.results.forEach(function(result, index) {
+                            if($('#searchText').val() === result.name){
+                                
+                                cardContent = `
+                                    <div class="card one-name" style="width: 12rem;">
+                                    <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                                    <div class="card-header">${result.name}</div>
+                                        <div class="card-body">
+                                        <h5 class="card-title">Actor details</h5>                                        
+                                            <p class="card-text">Height: ${result.height}.</p>
+                                            <p class="card-text">Mass: ${result.mass}.</p>
+                                            <p class="card-text">Hair: ${result.hair_color}.</p>
+                                            <p class="card-text">Skin: ${result.skin_color}.</p>                                    </div>
+                                    </div>
+                                    </div>`;
+
+                                    $('#showCard').html(cardContent);
+                                   
+                                } 
+                        })                         
+                        
+                    });
+
+                }
+                
+                showApiResults(data){                
+                    $( "#searchPag" ).click(function(e) {
+                        e.preventDefault();
+                        $( ".showpagination" ).show();
+                        $( ".textsearch" ).hide();
+                        $( ".one-name" ).hide();
+                        let cardsContent = '';
+                    data.results.forEach(function(result, index) {
+
+                       cardsContent += `
+                        <div class="card page" style="width: 12rem;" id="page${index+1}">
+                        <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                            <div class="card-header">${result.name}</div>
+                                <div class="card-body">
+                                <h5 class="card-title">Actor details</h5>
+                                <p class="card-text">Height: ${result.height}.</p>
+                                <p class="card-text">Mass: ${result.mass}.</p>
+                                <p class="card-text">Hair: ${result.hair_color}.</p>
+                                <p class="card-text">Skin: ${result.skin_color}.</p>
+                            </div>
+                        </div>
+                        </div>`;
+
+                      $('#showCards').html(cardsContent);                      
+                        
+                    }) 
+                    
+                    $('#pagination-demo').twbsPagination({
+                            totalPages: 10,
+                            startPage: 1,
+                            visiblePages: 1,
+                            initiateStartPageClick: true,
+                            next: 'Next',
+                            prev: 'Prev',
+                            onPageClick: function (event, page) {
+	                                $('.page-active').removeClass('page-active');
+                                    $('#page'+page).addClass('page-active');
+                                    
+                            },
+                        });
+                    });              
+                }
+
+                checkErrors(){
+                    
+                    if($('#searchText').val() === ''){
+                        let myMessage = `  <div class="alert alert-danger" role="alert">
+                                                    Please enter an actor name !!!
+                                                </div>`;
+                            $('#myMessage').html(myMessage);
+                        } 
+                }
+            
+        
+        
+        }
+
+        const url = 'https://swapi.co/api/people/';
+    
+        let cardlists = new Cardlist(url);
+        cardlists.fetchAsync();
+        
+    
+    </script>
+    
+</body>
+</html>
